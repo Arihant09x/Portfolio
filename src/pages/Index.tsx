@@ -487,18 +487,21 @@ const getStatusConfig = (status: TimelineItem["status"]) => {
       borderColor: "border-primary/20",
       badgeBg: "bg-primary/10",
       badgeText: "text-primary",
+      iconColor: "text-primary-foreground", // Add this line
     },
     current: {
       progressColor: "bg-secondary",
       borderColor: "border-secondary/20",
       badgeBg: "bg-secondary/10",
       badgeText: "text-secondary",
+      iconColor: "text-secondary-foreground", // Add this line
     },
     upcoming: {
       progressColor: "bg-muted-foreground",
       borderColor: "border-muted-foreground/20",
       badgeBg: "bg-muted-foreground/10",
       badgeText: "text-muted-foreground",
+      iconColor: "text-muted", // Add this line
     },
   };
 
@@ -571,7 +574,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-background shadow-lg relative z-10">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-background dark:border-background/50 shadow-lg relative z-10">
                         {item.image ? (
                           <img
                             src={item.image}
@@ -596,9 +599,9 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                     <Card
                       className={cn(
                         "border transition-all duration-300 hover:shadow-md relative",
-                        "bg-card/50 backdrop-blur-sm",
+                        "bg-card/50 dark:bg-card/30 backdrop-blur-sm",
                         config.borderColor,
-                        "group-hover:border-primary/30"
+                        "group-hover:border-primary/30 dark:group-hover:border-primary/50"
                       )}
                     >
                       <CardContent className="p-4 sm:p-6">
@@ -608,7 +611,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                               {item.title}
                             </motion.h3>
 
-                            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                               {item.category && (
                                 <span className="font-medium">
                                   {item.category}
@@ -638,11 +641,11 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                           </Badge>
                         </div>
 
-                        <motion.p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
+                        <motion.p className="text-sm sm:text-base text-muted-foreground dark:text-muted-foreground leading-relaxed mb-4">
                           {item.description}
                         </motion.p>
 
-                        <div className="h-1 bg-muted rounded-full overflow-hidden">
+                        <div className="h-1 bg-muted dark:bg-muted/50 rounded-full overflow-hidden">
                           <motion.div
                             className={cn(
                               "h-full rounded-full",
@@ -719,7 +722,7 @@ const DeveloperPortfolio = () => {
   }) => {
     setIsSubmitting(true);
     try {
-      sendEmail(data);
+      await sendEmail(data);
       toast({
         title: "Message sent!",
         description: "Thank you for your message. I'll get back to you soon.",
@@ -917,7 +920,7 @@ const DeveloperPortfolio = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a href="/Arihant_Chougule_Resume.pdf" download={PDF}>
+              <a href={PDF} download="Arihant_Chougule_Resume.pdf">
                 <motion.button
                   style={{ border, boxShadow }}
                   whileHover={{ scale: 1.05 }}
@@ -928,15 +931,15 @@ const DeveloperPortfolio = () => {
                   Download Resume
                 </motion.button>
               </a>
-              <a href="mailto:arihantc677@gmail.com?subject=Job Opportunity - Full Stack Developer">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 rounded-full border border-gray-600 px-6 py-3 text-gray-50 hover:bg-gray-800 transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  Hire Me
-                </motion.button>
+
+              {/* Corrected "Hire Me" button */}
+              <a
+                href="https://mail.google.com/mail/?view=cm&to=arihantc677@gmail.com&su=Job%20Opportunity%20-%20Full%20Stack%20Developer"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-600 px-6 py-3 text-gray-50 hover:bg-gray-800 transition-colors"
+              >
+                Hire Me via Gmail
               </a>
             </div>
           </motion.div>
@@ -1126,7 +1129,7 @@ const DeveloperPortfolio = () => {
             >
               <Button variant="outline" size="lg" asChild className="group">
                 <a
-                  href="https://github.com/yourusername"
+                  href="https://github.com/Arihant09x/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2"
@@ -1182,7 +1185,9 @@ const DeveloperPortfolio = () => {
                           whileHover={{ scale: 1.2 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <IconComponent className="w-4 h-4 text-white" />
+                          <IconComponent
+                            className={cn("w-4 h-4", config.iconColor)}
+                          />
                         </motion.div>
                       </div>
 

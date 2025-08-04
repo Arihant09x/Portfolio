@@ -8,6 +8,7 @@ import { Menu, X, Moon, Sun } from "lucide-react";
 const Navbar1 = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -23,6 +24,98 @@ const Navbar1 = () => {
     }
   }, [darkMode]);
 
+  // Scroll spy functionality
+  useEffect(() => {
+    const sections = [
+      "home",
+      "about",
+      "skills",
+      "projects",
+      "experience",
+      "contact",
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-10% 0px -40% 0px", // Adjusted to better detect sections
+      threshold: 0.2, // Increased threshold for better detection
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          setActiveSection(sectionId);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections with a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      sections.forEach((section) => {
+        const element = document.getElementById(section);
+        if (element) {
+          observer.observe(element);
+        } else {
+          console.warn(`Section with id "${section}" not found`);
+        }
+      });
+    }, 100);
+
+    // Cleanup
+    return () => {
+      clearTimeout(timeoutId);
+      sections.forEach((section) => {
+        const element = document.getElementById(section);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+    };
+  }, []);
+
+  // Fallback scroll detection for sections that might be missed
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        "home",
+        "about",
+        "skills",
+        "projects",
+        "experience",
+        "contact",
+      ];
+
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition <= offsetTop + offsetHeight
+          ) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navItems = [
+    "Home",
+    "About",
+    "Skills",
+    "Projects",
+    "Experience",
+    "Contact",
+  ];
+
   return (
     <div className="flex justify-center w-full py-4 px-4 mt-5">
       <div className="flex items-center justify-between px-4 py-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full w-full max-w-2xl relative z-10 shadow-sm shadow-primary/30">
@@ -34,8 +127,11 @@ const Navbar1 = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          {["Home", "About", "Skills", "Projects", "Experience", "Contact"].map(
-            (item) => (
+          {navItems.map((item) => {
+            const itemId = item.toLowerCase();
+            const isActive = activeSection === itemId;
+
+            return (
               <motion.div
                 key={item}
                 initial={{ opacity: 0, y: -10 }}
@@ -44,14 +140,30 @@ const Navbar1 = () => {
                 whileHover={{ scale: 1.05 }}
               >
                 <a
-                  href={`#${item.toLowerCase()}`}
-                  className="text-sm text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors font-medium"
+                  href={`#${itemId}`}
+                  className={`text-sm font-medium transition-all duration-300 relative group ${
+                    isActive
+                      ? "text-primary text-base font-bold"
+                      : "text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300"
+                  }`}
                 >
                   {item}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeUnderline"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
                 </a>
               </motion.div>
-            )
-          )}
+            );
+          })}
         </nav>
 
         {/* Dark Mode Toggle */}
@@ -115,30 +227,47 @@ const Navbar1 = () => {
               <X className="h-6 w-6 text-gray-900 dark:text-gray-100" />
             </motion.button>
             <div className="flex flex-col space-y-6">
-              {[
-                "Home",
-                "About",
-                "Skills",
-                "Projects",
-                "Experience",
-                "Contact",
-              ].map((item, i) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 + 0.1 }}
-                  exit={{ opacity: 0, x: 20 }}
-                >
-                  <a
-                    href={`#${item.toLowerCase()}`}
-                    className="text-base text-gray-900 dark:text-gray-100 font-medium"
-                    onClick={toggleMenu}
+              {navItems.map((item, i) => {
+                const itemId = item.toLowerCase();
+                const isActive = activeSection === itemId;
+
+                return (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 + 0.1 }}
+                    exit={{ opacity: 0, x: 20 }}
                   >
-                    {item}
-                  </a>
-                </motion.div>
-              ))}
+                    <a
+                      href={`#${itemId}`}
+                      className={`text-base font-medium transition-all duration-300 ${
+                        isActive
+                          ? "text-primary text-lg font-bold"
+                          : "text-gray-900 dark:text-gray-100"
+                      }`}
+                      onClick={() => {
+                        setActiveSection(itemId);
+                        toggleMenu();
+                      }}
+                    >
+                      {item}
+                      {isActive && (
+                        <motion.div
+                          layoutId="mobileActiveUnderline"
+                          className="h-0.5 bg-primary mt-1"
+                          initial={false}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </a>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         )}

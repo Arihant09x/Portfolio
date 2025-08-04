@@ -1,11 +1,8 @@
 import emailjs from "@emailjs/browser";
 export default async function sendEmail(data) {
-  const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-  const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-  const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-  console.log("All env vars", { serviceId, templateId, publicKey });
-
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
   const templateParams = {
     from_name: data.name,
     from_email: data.email,
